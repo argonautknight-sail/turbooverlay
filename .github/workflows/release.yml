@@ -1,0 +1,52 @@
+# Builds the installers and attaches them to a GitHub release.
+# Runs when a version tag is pushed, e.g.:  git tag v0.1.0 && git push origin v0.1.0
+# The tag should match the version in package.json.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: --win
+            files: dist/*.exe
+          - os: ubuntu-latest
+            target: --linux
+            files: dist/*.AppImage
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+      - run: npx electron-vite build
+
+      # "--publish never": the upload is done below, so electron-builder must not try to publish itself.
+      - run: npx electron-builder ${{ matrix.target }} --publish never
+
+      - name: Attach to the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          # Both jobs race to create the release; whichever loses just uploads.
+          gh release create "$TAG" --title "TurboOverlay $TAG" --generate-notes || true
+          gh release upload "$TAG" ${{ matrix.files }} --clobber

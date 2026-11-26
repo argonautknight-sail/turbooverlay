@@ -1,0 +1,95 @@
+{
+  "name": "turbo-overlay",
+  "version": "0.1.0",
+  "description": "Indoor cycling overlay for smart trainers: ERG workouts on top of any video, with FTP inferred from normal rides",
+  "main": "out/main/index.js",
+  "author": "TurboOverlay contributors",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "dev:real": "electron-vite dev -- --real",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.ts\"",
+    "dist:win": "electron-vite build && electron-builder --win",
+    "dist:linux": "electron-vite build && electron-builder --linux",
+    "icon": "node scripts/make-icon.mjs",
+    "dist:dir": "electron-vite build && electron-builder --win --dir"
+  },
+  "dependencies": {
+    "incyclist-ant-plus": "^0.3.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
+    "electron-vite": "^6.0.0",
+    "prettier": "^3.10.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  },
+  "build": {
+    "appId": "app.turbooverlay.desktop",
+    "productName": "TurboOverlay",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/node_modules/usb/**"
+    ],
+    "npmRebuild": false,
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "TurboOverlay-Setup-${version}.exe"
+    },
+    "portable": {
+      "artifactName": "TurboOverlay-${version}-portable.exe"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Sports",
+      "icon": "build/icon.png",
+      "artifactName": "TurboOverlay-${version}.AppImage"
+    }
+  },
+  "keywords": [
+    "cycling",
+    "indoor-cycling",
+    "smart-trainer",
+    "ant-plus",
+    "fe-c",
+    "erg-mode",
+    "ftp",
+    "overlay",
+    "electron"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/argonautknight-sail/turbooverlay.git"
+  },
+  "homepage": "https://github.com/argonautknight-sail/turbooverlay"
+}
